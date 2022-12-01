@@ -40,7 +40,10 @@ def extract_pdf(url: str) -> pd.DataFrame:
         else:
             df.loc[i][0] = df.loc[i - 1][0]
 
-    df.dropna(inplace=True)  # remove as linhas onde nãh há informação de hora
+    # TODO: remover linhas onde "ALT (m)" não tem valor númerico
+    df[pd.to_numeric(df["ALT (m)"], errors="coerce").notnull()]
+
+    df.dropna(inplace=True)  # remove as linhas onde não há informação de hora
     df.to_csv("output.csv", index=None)
 
     return df
