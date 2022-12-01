@@ -39,7 +39,10 @@ def extract_pdf(url: str) -> pd.DataFrame:
             df.loc[i][0] = dia
         else:
             df.loc[i][0] = df.loc[i - 1][0]
+
+    df.dropna(inplace=True)  # remove as linhas onde nãh há informação de hora
     df.to_csv("output.csv")
+
     return df
 
 
