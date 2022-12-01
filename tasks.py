@@ -41,7 +41,7 @@ def extract_pdf(url: str) -> pd.DataFrame:
             df.loc[i][0] = df.loc[i - 1][0]
 
     df.dropna(inplace=True)  # remove as linhas onde nãh há informação de hora
-    df.to_csv("output.csv")
+    df.to_csv("output.csv", index=None)
 
     return df
 
@@ -50,6 +50,7 @@ table = tabulate(
     extract_pdf(url).head(10).fillna(""),
     headers=["DIA", "HORA", "ALT (m)"],
     tablefmt="grid",
+    showindex=False,
 )
 
 print(table)
