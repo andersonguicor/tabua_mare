@@ -44,7 +44,7 @@ def extract_pdf(url: str) -> pd.DataFrame:
 
 
 table = tabulate(
-    extract_pdf(url).head(7).fillna(""),
+    extract_pdf(url).head(10).fillna(""),
     headers=["DIA", "HORA", "ALT (m)"],
     tablefmt="grid",
 )
