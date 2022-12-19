@@ -24,6 +24,15 @@ def data_cleaning(df: pd.DataFrame) -> pd.DataFrame:
 
     df.dropna(inplace=True)  # remove as linhas onde não há informação de hora
 
-    df.to_csv("output.csv", index=None)
+    # Formata as casas decimais da coluna ALT (m)
+    df["ALT (m)"] = (
+        df["ALT (m)"].astype(str).apply(lambda x: ("0" + x[0:2]) if x[0] == "." else x)
+    )
+
+    df["ALT (m)"] = (
+        df["ALT (m)"].astype(str).apply(lambda x: x[0:3] if len(x) > 4 else x)
+    )
+
+    df["ALT (m)"] = df["ALT (m)"].astype(float)
 
     return df

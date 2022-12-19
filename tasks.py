@@ -5,6 +5,9 @@ from tabulate import tabulate
 from utils import data_cleaning
 from urllib import request
 import numpy as np
+import time
+
+start_time = time.time()
 
 # Arquivo remoto a ser baixado
 url = "https://www.marinha.mil.br/chm/sites/www.marinha.mil.br.chm/files/dados_de_mare/41-porto_do_rio_de_janeiro.pdf"
@@ -22,34 +25,38 @@ def download_pdf(remote_url: str):
     ssl._create_default_https_context = ssl._create_unverified_context
 
     # Nome do arquivo local para salvar os dados
-    local_file = "tabua_mare.pdf"
+    local_file = "../tabua_mare.pdf"
     # Baixa remotamente e salva localmente
     request.urlretrieve(remote_url, local_file)
 
 
-def parse_data(remote_url: str) -> pd.DataFrame:
+def pdf_to_dataframe(page: int) -> pd.DataFrame:
     """
     Transforma os dados em formato CSV em um DataFrame do Pandas.
 
     Args:
-        file (str): caminho d.
+        page (int): Número da página a ser analisada.
 
     Returns:
         pd.DataFrame: DataFrame do Pandas.
     """
 
+    download_pdf(url)
+
     # https://tabula-py.readthedocs.io/en/latest/tabula.html
     dt = tabula.read_pdf(
-        "./tabua_mare.pdf",
+        "../tabua_mare.pdf",
         output_format="dataframe",
         pandas_options={"dtype": str},
-        pages="1",
+        pages=page,
+        # Delimitando a área da página a ser analisada (top,left,bottom,right) em pt.
         area=[
             53.6,
             27.8,
             803.8,
             566.3,
-        ],  # Parte da página a ser analisada (top,left,bottom,right) em pt.
+        ],
+        # Posição final de cada coluna em pt
         columns=[
             54.9,
             77.8,
@@ -75,7 +82,7 @@ def parse_data(remote_url: str) -> pd.DataFrame:
             521.8,
             544.6,
             566.2,
-        ],  # posição final de cada coluna em pt
+        ],
         guess=False,
         silent=True,
     )
@@ -94,12 +101,20 @@ def parse_data(remote_url: str) -> pd.DataFrame:
     return data_cleaning(dataframe)
 
 
-# visualizando os dados. TODO apagar
-table = tabulate(
-    parse_data(url).fillna(""),
-    headers=["DIA", "HORA", "ALT (m)"],
-    tablefmt="grid",
-    showindex=False,
-)
+def parse_data() -> pd.DataFrame:
 
-print(table)
+    dfList = [pdf_to_dataframe(1), pdf_to_dataframe(2), pdf_to_dataframe(3)]
+    dfm = pd.concat(dfList, ignore_index=True)
+
+    return dfm
+
+
+def save_report(dataframe: pd.DataFrame) -> None:
+    parse_data().to_csv("../output.csv")
+
+
+# TODO apagar linhas abaixo
+# Visualizando os dados.
+pd.set_option("display.max_rows", None)
+print(parse_data().to_csv("teste.csv"))
+print("Process finished --- %s seconds ---" % (time.time() - start_time))
