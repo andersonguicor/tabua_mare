@@ -194,5 +194,5 @@ def save_report(dfm: pd.DataFrame) -> None:
         dfm (pd.DataFrame): DataFrame do Pandas.
     """
 
-    dfm.to_csv("../output.csv")
+    dfm.to_csv("../output.csv", index=False)
     log("Dados salvos em output.csv com sucesso!")
