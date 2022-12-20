@@ -1,7 +1,18 @@
+# -*- coding: utf-8 -*-
+"""
+Tábuas de Maré utils
+"""
+
 import pandas as pd
+import prefect
 
 
-def data_cleaning(df: pd.DataFrame) -> pd.DataFrame:
+def log(message) -> None:
+    """Logs a message"""
+    prefect.context.logger.info(f"\n{message}")
+
+
+def data_cleaning(dfm: pd.DataFrame) -> pd.DataFrame:
     """
     Higieniza os dados e salva em output.csv.
 
@@ -10,29 +21,34 @@ def data_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     # Limpa células NaN da coluna HORA
-    df["HORA"] = df["HORA"].fillna("").astype(str)
+    dfm["HORA"] = dfm["HORA"].fillna("").astype(str)
 
     # Formata o horário para HH:MM
-    df["HORA"] = df["HORA"].apply(lambda x: "" if x == "" else (x[0:2] + ":" + x[2:4]))
+    dfm["HORA"] = dfm["HORA"].apply(
+        lambda x: "" if x == "" else (x[0:2] + ":" + x[2:4])
+    )
 
-    # Verifica se o valor da célula do campo DIA é numérica, caso não, preenche com o DIA anterior
-    for index, row in df.iterrows():
+    # Verifica se o valor da célula do campo DIA é numérico
+    # caso não, preenche com o DIA anterior
+    for index, row in dfm.iterrows():
         if str(row["DIA"]).isnumeric():
-            DIA = df.at[index, "DIA"]
+            dia = dfm.at[index, "DIA"]
         else:
-            df.at[index, "DIA"] = DIA
+            dfm.at[index, "DIA"] = dia
 
-    df.dropna(inplace=True)  # remove as linhas onde não há informação de hora
+    dfm.dropna(inplace=True)  # remove as linhas onde não há informação de hora
 
     # Formata as casas decimais da coluna ALT (m)
-    df["ALT (m)"] = (
-        df["ALT (m)"].astype(str).apply(lambda x: ("0" + x[0:2]) if x[0] == "." else x)
+    dfm["ALT (m)"] = (
+        dfm["ALT (m)"]
+        .astype(str)
+        .apply(lambda x: ("0" + x[0:2]) if x[0] == "." else x)
     )
 
-    df["ALT (m)"] = (
-        df["ALT (m)"].astype(str).apply(lambda x: x[0:3] if len(x) > 4 else x)
+    dfm["ALT (m)"] = (
+        dfm["ALT (m)"].astype(str).apply(lambda x: x[0:3] if len(x) > 4 else x)
     )
 
-    df["ALT (m)"] = df["ALT (m)"].astype(float)
+    dfm["ALT (m)"] = dfm["ALT (m)"].astype(float)
 
-    return df
+    return dfm
