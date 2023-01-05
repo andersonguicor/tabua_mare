@@ -6,9 +6,11 @@ Tábuas de Maré utils
 import pandas as pd
 import prefect
 
+
 def log(message) -> None:
     """Logs a message"""
     prefect.context.logger.info(f"\n{message}")
+
 
 def data_cleaning(dfm: pd.DataFrame) -> pd.DataFrame:
     """
@@ -29,9 +31,8 @@ def data_cleaning(dfm: pd.DataFrame) -> pd.DataFrame:
     # Considera a informação da linha anterior para a linha atual
     # quando o campo hora estiver vazio
     for index, row in dfm.iterrows():
-        if str(row["DIA"]).isnumeric() and row["HORA"]=="":
-            dia = dfm.at[index-1, "DIA"] = dfm.at[index, "DIA"]
-
+        if str(row["DIA"]).isnumeric() and row["HORA"] == "":
+            dia = dfm.at[index - 1, "DIA"] = dfm.at[index, "DIA"]
 
     # Verifica se o valor da célula do campo DIA é numérico
     # caso não, preenche com o DIA anterior
@@ -55,7 +56,5 @@ def data_cleaning(dfm: pd.DataFrame) -> pd.DataFrame:
     )
 
     dfm["DIA"] = dfm["DIA"].astype(str)
-    dfm["ALT (m)"] = dfm["ALT (m)"].astype(float)
 
-    
     return dfm
