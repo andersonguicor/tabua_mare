@@ -1,3 +1,4 @@
 prefect==0.15.9
 tabula-py
 pandas
+requests==2.26
