@@ -193,6 +193,6 @@ def save_report(dfm: pd.DataFrame) -> None:
     Args:
         dfm (pd.DataFrame): DataFrame do Pandas.
     """
-
-    dfm.to_csv("../output.csv", index=False)
+    dfm["DIA"] = dfm["DIA"].astype(str)
+    dfm.to_csv("./output.csv", index=False)
     log("Dados salvos em output.csv com sucesso!")
