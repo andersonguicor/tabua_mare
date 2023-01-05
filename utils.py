@@ -56,5 +56,6 @@ def data_cleaning(dfm: pd.DataFrame) -> pd.DataFrame:
     )
 
     dfm["DIA"] = dfm["DIA"].astype(str)
+    dfm["ALT (m)"] = dfm["ALT (m)"].astype(float)
 
     return dfm
